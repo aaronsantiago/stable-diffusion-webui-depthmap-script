@@ -12,12 +12,23 @@ class BackboneType(enum.Enum):
 
 
 try:
+
     # stable-diffusion-webui backbone
     from modules.images import save_image  # Should fail if not on stable-diffusion-webui
     from modules.devices import torch_gc  # TODO: is this really sufficient?
     from modules.images import get_next_sequence_number
     from modules.call_queue import wrap_gradio_gpu_call
-    from modules.shared import listfiles
+
+    # check for sd.next
+    try:
+        from modules.shared import listfiles
+    except:
+        print(" SD Next detected.\n")
+
+        def listfiles(dirname):
+            import os
+            filenames = [os.path.join(dirname, x) for x in sorted(os.listdir(dirname)) if not x.startswith(".")]
+            return [file for file in filenames if os.path.isfile(file)]
 
     def get_opt(name, default):
         from modules.shared import opts
